@@ -41,3 +41,17 @@ This repository uses fictional organizations, synthetic billing data, and indepe
 
 ## Important Note
 The exported CSV will demonstrate a NetSuite-oriented import structure. Actual compatibility depends on the target NetSuite account's configuration, required fields, custom forms, internal IDs, and import mappings. Live NetSuite import functionality is not claimed or tested in this demo.
+
+## Design Philosophy: Automation Without Compromising Billing QC
+
+This project is designed to reduce repetitive manual invoice preparation while preserving essential Accounting quality control procedures.
+
+Rather than generating ERP import files directly from consolidated data, the workflow retains a human-readable invoice review stage to support:
+
+- Shift-level billing verification
+- Regular, overtime, and double-time validation
+- Rate and additional charge verification
+- Traceability between source shifts and invoice line items
+- Detection of missing, duplicate, or inconsistent billing records
+
+The goal is not to eliminate human review, but to make it faster, more accurate, and easier to perform before generating NetSuite-oriented CSV import files.
