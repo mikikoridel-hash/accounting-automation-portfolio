@@ -1,0 +1,10 @@
+STEP 1 — Open raw/ and inspect the two weekly Excel files.
+STEP 2 — Open sample-output/MasterData.csv to see the combined 12 rows.
+STEP 3 — Open sample-output/ImportLog.csv to see the initial import.
+
+To run on GitHub without installing Python:
+Upload ImportTool.py, test_import.py and the raw folder to your repository.
+Create .github/workflows/import-demo.yml using the included YAML file contents.
+Open Actions > Import Super Bill Demo > Run workflow.
+Open the completed run and download the MasterData-and-ImportLog artifact.
+The tests demonstrate replacement and deletion within one run; separate GitHub runs start fresh.

@@ -1,0 +1,13 @@
+SourceFile,Shift ID,Service Date,Agency,Facility,Staff ID,Role,Unit,RT Hrs,OT Hrs,DT Hrs,Charge RT Hrs,Charge OT Hrs,Regular Rate,OT Rate,DT Rate,Charge RT Premium,Charge OT Premium,Additional,Additional Reason,Calculated Total
+WEO_2026-10-17.xlsx,SHIFT-001-A,2026-10-11,Cedar Staffing,Pineview Medical,STF-101,RN,Med-Surg,8,4,0,0,0,82,123,164,8,12,0,,1148.00
+WEO_2026-10-17.xlsx,SHIFT-002-A,2026-10-12,Cedar Staffing,Pineview Medical,STF-102,RN,ICU,8,2,0,0,2,82,123,164,8,12,0,,926.00
+WEO_2026-10-17.xlsx,SHIFT-003-A,2026-10-13,Cedar Staffing,Lakebend Care,STF-103,CNA,Rehab,8,0,0,0,0,38,57,76,8,12,75,Late shift premium,379.00
+WEO_2026-10-17.xlsx,SHIFT-004-A,2026-10-14,Harbor Clinical,Lakebend Care,STF-104,RN,Telemetry,8,2,0,0,0,88,132,176,8,12,0,,968.00
+WEO_2026-10-17.xlsx,SHIFT-005-A,2026-10-15,Harbor Clinical,Pineview Medical,STF-105,CNA,Med-Surg,8,0,0,0,0,40,60,80,8,12,0,,320.00
+WEO_2026-10-17.xlsx,SHIFT-006-A,2026-10-16,Harbor Clinical,Pineview Medical,STF-106,RN,ER,8,4,2,0,0,88,132,176,8,12,0,,1584.00
+WEO_2026-10-24.xlsx,SHIFT-001-B,2026-10-18,Cedar Staffing,Pineview Medical,STF-101,RN,Med-Surg,8,4,0,0,0,82,123,164,8,12,0,,1148.00
+WEO_2026-10-24.xlsx,SHIFT-002-B,2026-10-19,Cedar Staffing,Pineview Medical,STF-102,RN,ICU,8,2,0,0,2,82,123,164,8,12,0,,926.00
+WEO_2026-10-24.xlsx,SHIFT-003-B,2026-10-20,Cedar Staffing,Lakebend Care,STF-103,CNA,Rehab,8,0,0,0,0,38,57,76,8,12,75,Late shift premium,379.00
+WEO_2026-10-24.xlsx,SHIFT-004-B,2026-10-21,Harbor Clinical,Lakebend Care,STF-104,RN,Telemetry,8,2,0,0,0,88,132,176,8,12,0,,968.00
+WEO_2026-10-24.xlsx,SHIFT-005-B,2026-10-22,Harbor Clinical,Pineview Medical,STF-105,CNA,Med-Surg,8,0,0,0,0,40,60,80,8,12,0,,320.00
+WEO_2026-10-24.xlsx,SHIFT-006-B,2026-10-23,Harbor Clinical,Pineview Medical,STF-106,RN,ER,8,4,2,0,0,88,132,176,8,12,0,,1584.00
