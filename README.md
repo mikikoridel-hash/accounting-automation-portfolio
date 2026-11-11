@@ -77,3 +77,22 @@ Rather than generating ERP import files directly from consolidated data, the wor
 - Detection of missing, duplicate, or inconsistent billing records
 
 The goal is not to eliminate human review, but to make it faster, more accurate, and easier to perform before generating NetSuite-oriented CSV import files.
+
+## AI-Assisted Development
+
+This project demonstrates how generative AI can be used as a coding tool to implement business-driven automation solutions.
+
+**My Responsibilities**
+- Identified workflow inefficiencies and defined automation requirements.
+- Designed the intended workflow, business rules, and quality control requirements.
+- Directed the implementation through detailed requirements and iterative feedback.
+- Independently tested and validated the results against real-world accounting requirements.
+- Identified errors, requested corrections, and repeated testing until the solution met operational needs.
+- Deployed, maintained, and used the resulting automation in daily operations.
+
+**AI's Role**
+- Generated the code based on my requirements and feedback.
+
+**Development Approach**
+
+Human-led requirements, testing, quality assurance, and operations, with AI-assisted code generation.
