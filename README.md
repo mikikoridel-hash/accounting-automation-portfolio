@@ -19,6 +19,28 @@ Preparing this data for ERP import can require additional mapping, formatting, a
 - Validate required fields, data formats, and billing calculations before export.
 - Support monthly billing analysis and reporting.
 
+## Project Scope & Limitations
+
+This portfolio demo focuses on selected billing scenarios to demonstrate data integration, invoice automation, and quality control design.
+
+**Included in this demo:**
+- Regular Time (RT), Overtime (OT), and Double Time (DT)
+- Charge Nurse and Preceptor rate adjustments
+- Partial-shift premium calculations
+- Additional billing charges
+- Shift-level billing review and reconciliation
+- Invoice total validation before CSV export
+- NetSuite-oriented CSV generation
+
+**Additional scenarios supported in the original business workflow but intentionally excluded from this demo:**
+- Holiday billing
+- Missed Meal and Missed Break charges
+- On-Call and Call-Back billing
+
+These scenarios were excluded to keep the demonstration focused and manageable, rather than because they were outside the scope of the underlying business experience.
+
+**Design Priority:** Demonstrate how automated billing workflows can improve efficiency while preserving essential accounting quality controls and traceability.
+
 ## Planned Workflow
 1. Import sample weekly timesheets.
 2. Clean and consolidate source data using Power Query.
