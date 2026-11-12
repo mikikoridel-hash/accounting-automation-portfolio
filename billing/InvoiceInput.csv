@@ -1,3 +1,4 @@
 Unit,REG Hours,REG Amount,OT Hours,OT Amount,DT Hours,DT Amount,Additional Amount,REG Item,OT Item,DT Item,Additional Item
 Med-Surg,8,656.00,4,492.00,0,0.00,0.00,350,351,352,900
-ICU,8,720.00,2,294.00,0,0.00,0.00,430,431,432,900
+ICU,8,656.00,2,270.00,0,0.00,0.00,430,431,432,900
+
