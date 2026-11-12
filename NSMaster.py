@@ -11,9 +11,15 @@ ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "ns-output"
 
 
+
 def read_csv(path):
-    with path.open(newline="", encoding="utf-8") as f:
-        return list(csv.DictReader(f))
+    with path.open(newline="", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        reader.fieldnames = [
+            name.strip() for name in reader.fieldnames
+        ]
+        return list(reader)
+
 
 
 def write_csv(path, fields, rows):
