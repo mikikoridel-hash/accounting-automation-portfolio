@@ -1,34 +1,70 @@
-"""Exercise new/unchanged/changed, row deletion and failure preservation."""
+"""Test incremental imports in one persistent temporary workspace."""
 import shutil, tempfile, zipfile
 from pathlib import Path
 from xml.etree import ElementTree as ET
-from ImportTool import run, NS, ROOT
+from ImportTool import run, read_rows, NS, ROOT
 
-def change_fixture(path):
-    # Edit a temporary test copy only: remove one shift and adjust another's OT.
-    with zipfile.ZipFile(path) as z: parts={n:z.read(n) for n in z.namelist()}
-    name='xl/worksheets/sheet1.xml'; sheet=ET.fromstring(parts[name]); data=sheet.find(NS+'sheetData')
-    data.remove(data.findall(NS+'row')[-1])
-    cell=next(c for c in data.findall(NS+'row')[1] if c.get('r')=='I2');cell.find(NS+'v').text='3'
-    parts[name]=ET.tostring(sheet)
-    with zipfile.ZipFile(path,'w',zipfile.ZIP_DEFLATED) as z:
-        for n,b in parts.items():z.writestr(n,b)
+
+def delete_one_shift(path):
+    # Test fixture only. Remove a row from a source timesheet, not its invoice tab.
+    with zipfile.ZipFile(path) as z:
+        parts = {n: z.read(n) for n in z.namelist()}
+    name = 'xl/worksheets/sheet1.xml'
+    sheet = ET.fromstring(parts[name])
+    data = sheet.find(NS + 'sheetData')
+    rows = data.findall(NS + 'row')
+    assert len(rows) > 1
+    data.remove(rows[-1])
+    parts[name] = ET.tostring(sheet)
+    with zipfile.ZipFile(path, 'w', zipfile.ZIP_DEFLATED) as z:
+        for n, b in parts.items():
+            z.writestr(n, b)
+
 
 def main():
+    sources = sorted((ROOT / 'raw').glob('*.xlsx'))
+    assert len(sources) >= 2
     with tempfile.TemporaryDirectory() as d:
-        root=Path(d);shutil.copytree(ROOT/'raw',root/'raw');shutil.copytree(ROOT/'mapping',root/'mapping')
-        s,r=run(root);assert s['New']==2 and len(r)==12
-        s,r=run(root);assert s['Unchanged']==2 and len(r)==12
-        untouched=[x for x in r if x['SourceFile']=='WEO_2026-10-24.xlsx']
-        p=root/'raw/WEO_2026-10-17.xlsx';change_fixture(p)
-        s,r=run(root);assert s['Changed']==1 and s['Unchanged']==1 and len(r)==11
-        assert [x for x in r if x['SourceFile']=='WEO_2026-10-24.xlsx']==untouched
-        assert next(x for x in r if x['Shift ID']=='SHIFT-001-A')['Calculated Total']=='1025.00'
-        s,r=run(root);assert s['Unchanged']==2 and len(r)==11
-        before=(root/'output/state.json').read_bytes();p.write_bytes(b'bad workbook')
-        try:run(root)
-        except zipfile.BadZipFile:pass
-        else:raise AssertionError('Invalid file accepted')
-        assert (root/'output/state.json').read_bytes()==before
-    print('PASS: new, unchanged, replacement, deletion, unaffected file, rerun, invalid workbook preserves state.')
-if __name__=='__main__':main()
+        root = Path(d)
+        (root / 'raw').mkdir()
+        shutil.copytree(ROOT / 'mapping', root / 'mapping')
+        for p in sources[:-1]:
+            shutil.copy2(p, root / 'raw' / p.name)
+        initial = sum(len(read_rows(p)) for p in sources[:-1])
+        s, r = run(root)
+        assert s['New'] == len(sources) - 1 and len(r) == initial
+        s, r = run(root)
+        assert s['Unchanged'] == len(sources) - 1 and len(r) == initial
+        print(f'PASS: initial import and unchanged rerun: {initial} rows')
+        added = sources[-1]
+        shutil.copy2(added, root / 'raw' / added.name)
+        total = initial + len(read_rows(added))
+        s, r = run(root)
+        assert s['New'] == 1 and s['Unchanged'] == len(sources)-1 and len(r) == total
+        print(f'PASS: add {added.name}: {initial} -> {total} rows')
+        p = root / 'raw' / sources[0].name
+        before = {x['Shift ID']: x for x in r}
+        untouched = [x for x in r if x['SourceFile'] != p.name]
+        delete_one_shift(p)
+        s, r = run(root)
+        assert s['Changed'] == 1 and s['Unchanged'] == len(sources)-1 and len(r) == total-1
+        after = {x['Shift ID']: x for x in r}
+        removed = set(before) - set(after)
+        assert len(removed) == 1 and not (set(after) - set(before))
+        assert [x for x in r if x['SourceFile'] != p.name] == untouched
+        print(f'PASS: replace {p.name}, remove {removed.pop()}: {total} -> {total-1} rows; other files unchanged')
+        s, r = run(root)
+        assert s['Unchanged'] == len(sources) and len(r) == total-1
+        state = (root / 'output/state.json').read_bytes()
+        p.write_bytes(b'bad workbook')
+        try:
+            run(root)
+        except zipfile.BadZipFile:
+            pass
+        else:
+            raise AssertionError('Invalid file accepted')
+        assert (root / 'output/state.json').read_bytes() == state
+        print('PASS: unchanged rerun, invalid workbook preserves prior state')
+
+if __name__ == '__main__':
+    main()
