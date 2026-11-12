@@ -1,2 +1,4 @@
 Invoice Number,Invoice Date,Facility,WEO,Terms,Customer ID,Expected Total
 DEMO-PV10001,2026-11-09,Pineview Medical,2026-10-17,Net 14,1001,2074.00
+DEMO-PV10004,2026-11-09,Pineview Medical,2026-10-17,Net 14,1001,1432.00
+DEMO-PV10005,2026-11-16,Pineview Medical,2026-10-17,Net 14,1001,100.00
