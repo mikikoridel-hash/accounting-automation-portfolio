@@ -20,3 +20,12 @@ jobs:
 
       - name: Run weekly batch safety tests
         run: python test_weekly_batch.py
+
+      - name: Build weekly batch CSV
+        run: python run_weekly_batch.py
+
+      - name: Save weekly batch
+        uses: actions/upload-artifact@v4
+        with:
+          name: WeeklyBatch
+          path: batch-output/WeeklyBatch_*.csv
