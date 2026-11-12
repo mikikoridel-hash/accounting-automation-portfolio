@@ -16,11 +16,14 @@ def extract(rows, weo, facility, agencies, tabs=()):
             "Select a facility and at least one agency."
         )
 
+
     candidates = [
         r for r in rows
-        if r["SourceFile"] == f"WEO_{weo}.xlsx"
-        and (not tabs or r["SourceTab"] in tabs)
+        if r['SourceFile'] == f'WEO_{weo}.xlsx'
+        and r.get('Source Type') != 'Invoice Snapshot'
+        and (not tabs or r['SourceTab'] in tabs)
     ]
+
 
     if any(r["Mapping Status"] != "OK"
            for r in candidates):
