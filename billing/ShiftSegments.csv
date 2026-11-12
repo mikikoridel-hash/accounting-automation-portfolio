@@ -1,0 +1,5 @@
+WEO,Facility,Agency,SourceTab,Shift ID,Line ID,Staff ID,Service Date,Unit,RT Hrs,OT Hrs,DT Hrs,RT Rate,OT Rate,DT Rate
+2026-10-17,Pineview Medical,Cedar Staffing,Cedar Original,SHIFT-1001,LINE-001,STF-201,2026-10-15,ICU-CHARGE,2,0,0,100,150,200
+2026-10-17,Pineview Medical,Cedar Staffing,Cedar Original,SHIFT-1001,LINE-002,STF-201,2026-10-15,ICU-CHARGE-PRECEPTOR,4,0,0,108,162,216
+2026-10-17,Pineview Medical,Cedar Staffing,Cedar Original,SHIFT-1001,LINE-003,STF-201,2026-10-15,ICU-PRECEPTOR,2,4,0,100,150,200
+2026-10-17,Pineview Medical,Cedar Staffing,Cedar COR,SHIFT-1001,LINE-004,STF-201,2026-10-15,ICU-PRECEPTOR,0,0,0.5,100,150,200
