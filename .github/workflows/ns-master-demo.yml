@@ -1,0 +1,36 @@
+
+name: NS Master Demo
+
+on:
+  workflow_dispatch:
+    inputs:
+      invoice:
+        description: 'Invoice Number'
+        required: true
+        default: 'DEMO-PV10001'
+
+permissions:
+  contents: read
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Check Amount Total and Export
+        env:
+          INVOICE: ${{ inputs.invoice }}
+        run: python NSMaster.py --invoice "$INVOICE"
+
+      - name: Save reconciliation results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: NS-Master-Results
+          path: ns-output/*.csv
