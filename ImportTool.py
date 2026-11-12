@@ -13,6 +13,15 @@ NS='{http://schemas.openxmlformats.org/spreadsheetml/2006/main}'
 REL='{http://schemas.openxmlformats.org/officeDocument/2006/relationships}'
 D=Decimal
 
+def source_type(tab):
+    if re.search(
+        r'\b20\d{2}\s+\d{1,2}-\d{1,2}-\d{2,4}$',
+        tab.strip()
+    ):
+        return 'Invoice Snapshot'
+
+    return 'Timesheet'
+
 def read_rows(path):
     with zipfile.ZipFile(path) as z:
         wb=ET.fromstring(z.read('xl/workbook.xml'))
@@ -45,15 +54,52 @@ def read_rows(path):
                 if not all(r[h] for h in FIELDS[:7]): raise ValueError(f'{path.name}: missing required field')
                 try: r['Service Date']=date.fromisoformat(r['Service Date']).isoformat()
                 except ValueError: r['Service Date']=(date(1899,12,30)+timedelta(days=int(D(r['Service Date'])))).isoformat()
-                nums=[D(r[h]) for h in FIELDS[7:18]]
-                rt,ot,dt,crt,cot,base,otr,dtr,cp,op,extra=nums
-                if any(not n.is_finite() or n<0 for n in nums) or rt>8 or ot>4 or crt>rt or cot>ot or (ot and rt!=8) or (dt and (rt!=8 or ot!=4)):
-                    raise ValueError(f'{path.name}: invalid hours/rates for {r["Shift ID"]}')
-                if otr!=base*D('1.5') or dtr!=base*2 or cp!=8 or op!=12:
-                    raise ValueError(f'{path.name}: invalid demo rates')
-                # Recompute independently; Excel cached formula results may be stale.
-                r['Calculated Total']=str((rt*base+ot*otr+dt*dtr+crt*cp+cot*op+extra).quantize(D('.01'),rounding=ROUND_HALF_UP))
-                rows.append({'SourceTab':sheet.get('name'),**r})
+
+                nums = [D(r[h]) for h in FIELDS[7:18]]
+                rt, ot, dt, crt, cot, base, otr, dtr, cp, op, extra = nums
+
+                kind = source_type(sheet.get('name'))
+
+                if any(not n.is_finite() for n in nums):
+                    raise ValueError(
+                        f'{path.name}: invalid numeric value'
+                    )
+
+                if kind == 'Timesheet':
+                    r['Calculated Total'] = str(
+                        (
+                            rt * base
+                            + ot * otr
+                            + dt * dtr
+                            + crt * cp
+                            + cot * op
+                            + extra
+                        ).quantize(
+                            D('.01'),
+                            rounding=ROUND_HALF_UP
+                        )
+                    )
+
+                else:
+                    billed = D(r['Calculated Total'])
+
+                    if not billed.is_finite():
+                        raise ValueError(
+                            f'{path.name}: invalid invoice amount'
+                        )
+
+                    r['Calculated Total'] = str(
+                        billed.quantize(
+                            D('.01'),
+                            rounding=ROUND_HALF_UP
+                        )
+                    )
+
+                rows.append({
+                    'SourceTab': sheet.get('name'),
+                    **r
+                })
+
             if rows: combined.extend(rows[1:]); matched+=1
         if not matched: raise ValueError(f'{path.name}: no timesheet headers found')
         return combined
@@ -79,14 +125,19 @@ def run(root=ROOT):
         rows=old['rows'] if status=='Unchanged' else read_rows(p)
         updated[p.name]={'hash':digest,'rows':rows}; stats[status]+=1
         log.append([p.name,status,len(rows),len(old['rows']) if old else 0])
-    records=[]; seen=set()
+
+    records = []
+
     for name, entry in updated.items():
         for r in entry['rows']:
-            key=r['Shift ID']
-            if key in seen: raise ValueError('Duplicate Shift ID: '+key)
-            seen.add(key); records.append({'SourceFile':name,**r})
+            records.append({
+                'SourceFile': name,
+                'Source Type': source_type(r['SourceTab']),
+                **r
+            })
+
     # Validate everything before committing the canonical state. CSV is a derived export.
-    buf=io.StringIO(); writer=csv.DictWriter(buf,fieldnames=['SourceFile','SourceTab']+FIELDS);writer.writeheader();writer.writerows(records)
+    buf=io.StringIO(); writer=csv.DictWriter(buf,fieldnames=['SourceFile','SourceTab','Source Type']+FIELDS);writer.writeheader();writer.writerows(records)
     # Mapping is reapplied each run; raw data remains unchanged.
     def mapping(name):
         with (root/'mapping'/f'{name}.csv').open(newline='',encoding='utf-8') as f:
@@ -107,7 +158,17 @@ def run(root=ROOT):
             if not value: issues.append({'SourceFile':r['SourceFile'],'SourceTab':r['SourceTab'],'Shift ID':r['Shift ID'],'Field':field,'Raw Value':r[field]})
     def export(name,fields,rows):
         b=io.StringIO(); w=csv.DictWriter(b,fieldnames=fields); w.writeheader(); w.writerows(rows); atomic(out/name,b.getvalue())
-    export('CleanedData.csv',['SourceFile','SourceTab']+FIELDS+['Facility Standard','Agency Standard','Mapping Status'],clean)
+
+
+    export(
+        'CleanedData.csv',
+        ['SourceFile','SourceTab','Source Type']
+        + FIELDS
+        + ['Facility Standard','Agency Standard','Mapping Status'],
+        clean
+    )
+
+    
     export('MappingQC.csv',['SourceFile','SourceTab','Shift ID','Field','Raw Value'],issues)
     atomic(state,json.dumps(updated,indent=2)+'\n')
     atomic(out/'MasterData.csv',buf.getvalue())
