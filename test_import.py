@@ -16,7 +16,7 @@ def change_fixture(path):
 
 def main():
     with tempfile.TemporaryDirectory() as d:
-        root=Path(d);shutil.copytree(ROOT/'raw',root/'raw')
+        root=Path(d);shutil.copytree(ROOT/'raw',root/'raw');shutil.copytree(ROOT/'mapping',root/'mapping')
         s,r=run(root);assert s['New']==2 and len(r)==12
         s,r=run(root);assert s['Unchanged']==2 and len(r)==12
         untouched=[x for x in r if x['SourceFile']=='WEO_2026-10-24.xlsx']

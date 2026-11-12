@@ -1,10 +1,8 @@
-STEP 1 — Open raw/ and inspect the two weekly Excel files.
-STEP 2 — Open sample-output/MasterData.csv to see the combined 12 rows.
-STEP 3 — Open sample-output/ImportLog.csv to see the initial import.
-
-To run on GitHub without installing Python:
-Upload ImportTool.py, test_import.py and the raw folder to your repository.
-Create .github/workflows/import-demo.yml using the included YAML file contents.
-Open Actions > Import Super Bill Demo > Run workflow.
-Open the completed run and download the MasterData-and-ImportLog artifact.
-The tests demonstrate replacement and deletion within one run; separate GitHub runs start fresh.
+V3: Excel data consolidation and cleaning (synthetic data only)
+1. Copy weekly Excel files into raw/. Each has two facility tabs and an excluded Invoice Review tab.
+2. Run python ImportTool.py (Python 3.12+, standard library only), or run the existing GitHub Actions workflow.
+3. Open output/MasterData.csv (raw names preserved), CleanedData.csv (standard names), MappingQC.csv (unmapped names), ImportLog.csv.
+4. Change mapping/AgencyMap.csv or FacilityMap.csv to resolve an unmapped alias; rerun without editing source files.
+5. Run python test_import.py for replacement/deletion tests.
+Existing V2 state.json is not compatible; use a fresh output directory for V3. GitHub Actions starts fresh each run; incremental behavior is tested within one run.
+This is a limited demo with fixed timesheet headers. Invoice Review is a placeholder; invoice generation and partial-shift premiums are not yet implemented.
