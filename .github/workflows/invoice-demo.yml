@@ -1,0 +1,51 @@
+
+name: Invoice Tool Demo
+
+on:
+  workflow_dispatch:
+    inputs:
+      weo:
+        description: 'Work week ending (YYYY-MM-DD)'
+        required: true
+        default: '2026-10-17'
+      facility:
+        description: 'Standard facility name'
+        required: true
+        default: 'Pineview Medical'
+      agencies:
+        description: 'Comma-separated standard agency names'
+        required: true
+        default: 'Cedar Staffing'
+      tabs:
+        description: 'Optional source tab names (comma-separated)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Test invoice selection
+        run: python test_invoice.py
+
+      - name: Extract invoice rows
+        env:
+          WEO: ${{ inputs.weo }}
+          FACILITY: ${{ inputs.facility }}
+          AGENCIES: ${{ inputs.agencies }}
+          TABS: ${{ inputs.tabs }}
+        run: python InvoiceTool.py --weo "$WEO" --facility "$FACILITY" --agencies "$AGENCIES" --tabs "$TABS"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Invoice-Review
+          path: invoice-output/*.csv
