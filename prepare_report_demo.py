@@ -89,12 +89,14 @@ def make_snapshot(wb, sheet_name, rows):
             + dt * dt_rate
         ).quantize(D("0.01"))
 
+
         ws.append([
             row["Shift ID"],
             row["Service Date"],
-            row["Agency"],
-            row["Facility"],
+            "CEDAR STAFFING",
+            "PINEVIEW MED",
             row["Staff ID"],
+
             "RN",
             row["Unit"],
             float(rt),
