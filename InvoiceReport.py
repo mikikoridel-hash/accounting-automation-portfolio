@@ -105,6 +105,24 @@ def select_invoice(report_rows, invoice_number):
     return selected
 
 
+def format_report(rows):
+    return [
+        {
+            "Agency": row["Agency Standard"],
+            "Clinician": row["Staff ID"],
+            "INVOICE#": row["Invoice Number"],
+            "Type": row["Role"],
+            "Dept Code/Unit": row["Unit"],
+            "Shift Date": row["Service Date"],
+            "REG": row["RT Hrs"],
+            "OT": row["OT Hrs"],
+            "DT": row["DT Hrs"],
+            "Total": row["Calculated Total"],
+        }
+        for row in rows
+    ]
+
+
 def main():
     parser = argparse.ArgumentParser()
 
@@ -147,6 +165,13 @@ def main():
         selected,
     )
 
+
+    write_csv(
+        OUT / "ClientReport.csv",
+        format_report(selected),
+    )
+
+    
     print(f"Invoice Number: {args.invoice}")
     print(f"Rows: {len(selected)}")
     print(f"Total: ${total:,.2f}")
