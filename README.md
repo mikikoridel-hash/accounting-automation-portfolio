@@ -78,6 +78,21 @@ An interactive financial dashboard designed to support accounts payable analysis
 
 ---
 
+### Agency Invoice Approval Dashboard — Power BI
+
+An operational analytics dashboard examining invoice approval turnaround times across staffing agencies and healthcare facilities.
+
+- Invoice approval aging distribution by agency
+- Average approval lag and seven-day approval rate
+- Monthly approval trends based on work week ending dates
+- Interactive agency, facility, and period filters
+- Analysis of invoice volume versus approval turnaround
+
+[View Agency Invoice Approval Dashboard Project](financial-dashboard/agency-invoice-approval/README.md)
+
+![Agency Invoice Approval Dashboard](financial-dashboard/agency-invoice-approval/Agency_Invoice_Approval_Dashboard.png)
+
+---
 
 ## 1. Business Problem
 
