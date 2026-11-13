@@ -5,7 +5,7 @@
 
 A portfolio demonstrating how existing accounting workflows can be made more efficient, reliable, and easier to operate without replacing the underlying business process.
 
-Based on real-world accounting improvements and recreated using entirely synthetic data, this project demonstrates accounts receivable automation, accounts payable automation, billing data consolidation, quality control, and historical invoice reporting.
+Based on real-world accounting improvements and recreated using entirely synthetic data, this project demonstrates accounts receivable automation, accounts payable automation, credit card transaction automation, billing data consolidation, quality control, and historical invoice reporting.
 
 ---
 
@@ -18,6 +18,7 @@ Based on real-world accounting improvements and recreated using entirely synthet
 |---|---|---|
 | Accounts Receivable | Approximately 8 hours per weekly cycle | 2–3 hours |
 | Accounts Payable | Approximately 2 hours per weekly cycle | Under 5 minutes |
+| Credit Card Processing | Approximately 2 hours per monthly cycle | Approximately 30 minutes |
 | Historical Invoice Reporting | Manual workbook and worksheet searches | Invoice-number-driven reporting |
 
 
@@ -36,6 +37,14 @@ Reduced weekly vendor bill preparation and entry time from approximately **2 hou
 Previously, each vendor's historical bill was retrieved and copied individually in NetSuite to preserve the correct vendor-specific COGS account. Invoice numbers, dates, amounts, fees, and memos were then updated manually.
 
 The improved workflow replaces those repeated searches and manual entries with standardized mapping tables and automated CSV generation.
+
+### Credit Card Processing
+
+Reduced monthly credit card transaction processing time from approximately **2 hours to 30 minutes** through reusable vendor and expense account mappings and automated CSV preparation for two AMEX accounts.
+
+The original Excel workflow highlights missing vendor mappings and negative amounts, and provides an export check before saving the import file. Payments and refunds remain manual entries because they are not handled by the existing import process.
+
+The Python demonstration adds separate exception reports, transaction count and amount reconciliation, and blocking of final export files when unresolved mappings remain.
 
 ### Historical Reporting
 
@@ -64,6 +73,7 @@ Traditional workflows require repetitive manual tasks:
 - Looking up vendor-specific accounting information.
 - Reconciling billing totals against approved amounts.
 - Preparing supporting documents and client reports.
+- Classifying credit card charges and preparing separate account imports.
 
 These manual processes create opportunities for incorrect data entry, duplicate billing, missing information, inconsistent agency names, and time-consuming historical research.
 
@@ -123,6 +133,8 @@ Standardized input reduces name variations before they enter the processing work
 | Historical reporting | Search old workbooks and worksheets | Enter an invoice number to retrieve billing details |
 | Client report preparation | Locate and copy historical source data | Generate report details and paste into the existing template |
 | Agency data entry | Manually type agency names | Select standardized names using Data Validation |
+| Credit card classification | Repeated vendor and expense account lookup | Reusable description-based mapping |
+| Credit card import preparation | Manual transaction entry | Separate account CSVs with manual exception review |
 
 ---
 
@@ -157,6 +169,16 @@ flowchart TD
     S --> T[AP Reconciliation]
     T --> U[Vendor Bill CSV]
     U --> N
+
+    CC[AMEX Account A and B CSVs] --> CM[Credit Card Automation]
+    CV[Vendor and Card Account Mapping] --> CM
+    CM --> CQ[Exception Review and Reconciliation]
+    CQ --> CE[Account-Specific Credit Card CSVs]
+    CQ --> CX[Manual Payment and Refund Review]
+    CQ --> CY[Missing Mapping Review]
+    CY --> CV
+    CE --> N
+    CX --> CZ[Manual Accounting System Entry]
 ```
 
 ### Architecture Notes
@@ -164,6 +186,8 @@ flowchart TD
 - AR and historical reporting reuse the consolidated billing dataset.
 - AP processes approved agency invoice records rather than rebuilding payable amounts from clinical shift data.
 - Agency mapping is shared across AR and AP.
+- Credit card processing uses separate AMEX transaction inputs and vendor and card account mappings.
+- Cardholders share their parent credit card account; individual names are retained in transaction memos.
 - Historical invoice snapshots preserve the details billed at a particular point in time.
 - Manual accounting system import and client report submission remain controlled steps.
 
@@ -493,6 +517,74 @@ The AP export is a synthetic ERP-oriented demonstration, not a certified product
 
 ---
 
+### H. Credit Card Automation
+
+**Files:** `CreditCard.py`, `test_credit_card.py`
+
+Prepares account-specific credit card transaction CSV files for two AMEX accounts while preserving manual accounting review and exception handling.
+
+#### Inputs
+
+| File | Purpose |
+|---|---|
+| `credit-card/AMEX_Account_A.csv` | Synthetic transactions for AMEX Account A |
+| `credit-card/AMEX_Account_B.csv` | Synthetic transactions for AMEX Account B |
+| `credit-card/VendorMap.csv` | Vendor keyword, vendor ID, and expense account mapping |
+| `credit-card/CardAccountMap.csv` | Parent credit card account ID and reference prefix |
+
+#### Mapping and account structure
+
+- Identify vendors by matching keywords in transaction descriptions.
+- Retrieve the vendor and expense account internal IDs from reusable mappings.
+- Assign transactions to the appropriate parent credit card account.
+- Preserve individual cardholder names in the memo and line description.
+- Generate account-specific transaction references.
+
+Multiple cardholders can share one parent account. For example, `DEMO CARDHOLDER A1` and `DEMO CARDHOLDER A2` both map to fictional credit card account 2201, while their individual names remain visible in the transaction records. Account B maps to fictional account 2202.
+
+#### Exception handling and quality controls
+
+The original Excel workflow highlights missing vendor keys in purple and negative amounts in yellow. Its check button reports missing vendor keys, payment rows, and negative amount rows.
+
+The Python demonstration follows the same accounting decisions and extends the controls:
+
+- Route payment and negative amount transactions to a manual-entry review file before vendor mapping.
+- Identify missing vendor keys or incomplete vendor mappings for accounting review.
+- Validate the source credit card account and check generated vendor and expense account IDs.
+- Check for payments, negative amounts, and duplicate references in the generated export.
+- Reconcile source transaction counts and signed amounts against import candidates, manual-entry transactions, and unresolved mappings.
+- Block final import files for both accounts if either account has unresolved mapping errors or fails reconciliation or export validation.
+
+Payments and refunds are intentionally not imported. Accounting reviews those transactions and records them manually. New vendors require accounting judgment before a mapping is added; subsequent transactions can reuse the approved mapping.
+
+#### Demonstration results
+
+| Metric | Account A | Account B |
+|---|---:|---:|
+| Source transactions | 6 | 6 |
+| Source total | -$304.52 | -$2.76 |
+| Import transactions | 4 | 4 |
+| Import amount | $220.48 | $377.24 |
+| Manual entry transactions | 2 | 2 |
+| Manual entry amount | -$525.00 | -$380.00 |
+| Missing mappings | 0 | 0 |
+| Reconciliation difference | $0.00 | $0.00 |
+| QC status | PASS | PASS |
+
+The 12 source transactions are accounted for as eight import transactions and four manual-entry transactions. A separate automated test introduces an unmapped vendor, verifies that exports are blocked, adds the mapping, and verifies that the corrected batch passes.
+
+#### Outputs
+
+- `AMEX_A_Import.csv`
+- `AMEX_B_Import.csv`
+- `MissingVendor_QC.csv`
+- `ManualEntry_Review.csv`
+- `CC_Reconciliation.csv`
+
+The credit card export is a synthetic ERP-oriented demonstration. No live NetSuite import has been performed.
+
+---
+
 ## 6. Quality Control and Data Integrity
 
 | Control | Purpose |
@@ -512,10 +604,17 @@ The AP export is a synthetic ERP-oriented demonstration, not a certified product
 | AP vendor invoice duplicate detection | Detect repeated vendor invoices within an input batch |
 | VMS fee calculation | Apply consistent fee calculations and rounding |
 | AP batch reconciliation | Verify gross, fee, net payable, and CSV totals |
+| Credit card vendor mapping | Identify unmapped vendors and incomplete accounting IDs |
+| Credit card account validation | Prevent transactions from being assigned to the wrong parent account |
+| Credit card exception routing | Retain payments and refunds for manual entry |
+| Credit card export validation | Check required mapping IDs, payment and negative amount exclusion, and batch reference uniqueness |
+| Credit card reconciliation | Account for all source transactions and amounts before releasing exports |
 
 ### Human review remains essential
 
 The real-world AR workflow retains manual review of supporting agency invoice PDFs, invoice amount verification, attachment completeness, exception handling, and final approval.
+
+The credit card workflow also retains manual review of new vendor classifications and manual entry of payments and refunds.
 
 Automation is intended to reduce repetitive entry and retrieval work, not eliminate the accountant's responsibility for financial accuracy.
 
@@ -543,6 +642,7 @@ The repository includes GitHub Actions workflows that generate downloadable demo
 | Segment Billing Demo | Original and correction invoice generation |
 | Invoice Report Demo | Historical mapping and interactive Excel reporting |
 | AP Billing Demo | Vendor account mapping, VMS fees, reconciliation, and vendor bill CSV generation |
+| Credit Card Automation Demo | Two AMEX accounts, vendor mapping, manual exceptions, reconciliation, and account-specific CSVs |
 
 ### Recommended Demo 1: Interactive Invoice Report
 
@@ -577,6 +677,19 @@ Open `VendorBill_Import.csv` and observe:
 
 Open `APReconciliation.csv` to verify the net payable and CSV total of $5,183.20 with a $0.00 difference.
 
+### Recommended Demo 3: Credit Card Automation
+
+Run **Credit Card Automation Demo** (`credit-card-demo.yml`).
+
+Download the **Credit-Card-Results** artifact.
+
+- Open `AMEX_A_Import.csv` and `AMEX_B_Import.csv` to review four expense transactions per account and the corresponding vendor, expense, and credit card account IDs.
+- Open `ManualEntry_Review.csv` to review four payment and refund transactions with source file and row references.
+- Open `MissingVendor_QC.csv` to review unresolved vendor mappings (none in the baseline demo).
+- Open `CC_Reconciliation.csv` to verify both accounts pass with a $0.00 difference.
+
+The workflow also runs automated tests for account separation, cardholder preservation, vendor mapping, manual exception handling, reference uniqueness, and missing-mapping export blocking and recovery.
+
 ### Additional Control Demonstrations
 
 Run **NS Master Demo** and **Weekly Batch Demo** to explore AR reconciliation and duplicate invoice controls.
@@ -606,6 +719,12 @@ accounting-automation-portfolio/
 |   ApprovedAgencyInvoices.csv
 |   VendorMap.csv
 |
+|-- credit-card/
+|   AMEX_Account_A.csv
+|   AMEX_Account_B.csv
+|   VendorMap.csv
+|   CardAccountMap.csv
+|
 |-- ImportTool.py
 |-- InvoiceTool.py
 |-- NSMaster.py
@@ -613,6 +732,7 @@ accounting-automation-portfolio/
 |-- SegmentInvoice.py
 |-- InvoiceReport.py
 |-- APBilling.py
+|-- CreditCard.py
 |
 |-- run_weekly_batch.py
 |-- run_segment_billing.py
@@ -623,14 +743,16 @@ accounting-automation-portfolio/
 |-- test_invoice.py
 |-- test_weekly_batch.py
 |-- test_ap_billing.py
+|-- test_credit_card.py
 |
 |-- .github/workflows/
 |   GitHub Actions demonstration workflows
+|   credit-card-demo.yml (Credit Card Automation Demo)
 |
 |-- README.md
 ```
 
-Generated outputs include consolidated datasets, billing summaries, reconciliation results, accounting-system-oriented CSV files, and interactive Excel reports.
+Generated outputs include consolidated datasets, billing summaries, reconciliation results, accounting-system-oriented CSV files, credit card exception reports, and interactive Excel reports.
 
 ---
 
@@ -693,6 +815,10 @@ This repository is a portfolio demonstration, not a production accounting system
 - Split-shift examples use a separate sample dataset.
 - AR and AP amounts are independently supplied; matching sample amounts do not imply that customer billing and vendor payable amounts must be equal.
 - AP duplicate checks apply to the current input batch and do not query historical transactions in NetSuite.
+- Credit card payments and refunds are reported for manual entry, not automatically posted.
+- Credit card reference validation is limited to the generated batch; it does not detect transactions already imported into NetSuite.
+- Credit card sample account numbers, cardholder names, vendor mappings, and internal IDs are synthetic. The two sample files represent parent accounts; production cardholder-specific card numbers and mappings are outside this demonstration.
+- Credit card reconciliation accounts for source rows and signed amounts but does not independently verify the completeness of the original card statement or the correctness of accounting classifications.
 - Full production NetSuite field mappings, including production-specific accounting and custom fields, are outside the current demonstration scope.
 - Actual ERP import execution is not performed by the demonstrations.
 - Client workbook insertion and final submission remain manual.
@@ -724,10 +850,13 @@ The objective is to demonstrate workflow architecture, practical automation, and
 - [x] Automated VMS fee processing
 - [x] AP vendor invoice duplicate controls
 - [x] AP reconciliation and CSV generation
+- [x] Credit card transaction automation for two AMEX accounts
+- [x] Credit card vendor and expense account mapping
+- [x] Credit card payment and refund exception handling
+- [x] Credit card export validation and reconciliation
 
 ### Next Milestones
 
-- [ ] Credit card transaction automation
 - [ ] Unified end-to-end demonstration
 - [ ] Additional documentation and regression tests
 
@@ -735,7 +864,7 @@ The objective is to demonstrate workflow architecture, practical automation, and
 
 ## 13. Data Privacy
 
-All demonstration data is synthetic.
+All demonstration data is synthetic, including credit card transactions, cardholder names, account identifiers, and mapping records.
 
 No employer workbooks, production credentials, confidential client information, or actual financial records are required to run this project.
 
@@ -749,4 +878,4 @@ Accounting automation does not always require replacing an existing system.
 
 By consolidating source data, preserving historical billing records, standardizing reference information, automating repetitive entry, and retaining accounting review controls, existing workflows can become significantly easier to operate without disrupting the surrounding business process.
 
-**One data foundation. Multiple accounting workflows. Fewer manual steps. Stronger controls.**
+**Shared billing data. Reusable mappings. Multiple accounting workflows. Fewer manual steps. Stronger controls.**
