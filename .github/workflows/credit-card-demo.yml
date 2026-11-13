@@ -1,0 +1,39 @@
+
+name: Credit Card Automation Demo
+
+on:
+  workflow_dispatch:
+
+jobs:
+  credit-card-demo:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run credit card tests
+        run: python -m unittest test_credit_card.py -v
+
+      - name: Generate AMEX import files
+        run: python CreditCard.py
+
+      - name: Display reconciliation results
+        if: always()
+        run: |
+          if [ -f cc-output/CC_Reconciliation.csv ]; then
+            cat cc-output/CC_Reconciliation.csv
+          fi
+
+      - name: Upload credit card results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Credit-Card-Results
+          path: cc-output/
+          if-no-files-found: warn
