@@ -26,16 +26,19 @@ jobs:
       - name: Import Super Bill
         run: python ImportTool.py
 
+
       - name: Generate Original Invoice Report
         run: |
           python InvoiceReport.py --invoice DEMO-PV10004
           mkdir -p final-reports
           cp report-output/InvoiceReport.csv final-reports/DEMO-PV10004.csv
+          cp report-output/ClientReport.csv final-reports/Client-DEMO-PV10004.csv
 
       - name: Generate Correction Invoice Report
         run: |
           python InvoiceReport.py --invoice DEMO-PV10005
           cp report-output/InvoiceReport.csv final-reports/DEMO-PV10005.csv
+          cp report-output/ClientReport.csv final-reports/Client-DEMO-PV10005.csv
           cp report-output/InvoiceReportData.csv final-reports/InvoiceReportData.csv
 
       - name: Verify report totals
@@ -81,6 +84,13 @@ jobs:
                   f"{len(rows)} rows | ${actual:,.2f}"
               )
           PY
+
+
+      - name: Build interactive Excel report
+        run: |
+          python build_report_excel.py
+          cp report-output/InvoiceReport.xlsx final-reports/InvoiceReport.xlsx
+
 
       - name: Upload Invoice Reports
         uses: actions/upload-artifact@v4
