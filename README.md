@@ -13,11 +13,13 @@ Based on real-world accounting improvements and recreated using entirely synthet
 
 ### Real-World Workflow Improvements
 
+
 | Area | Before | After |
 |---|---|---|
 | Accounts Receivable | Approximately 8 hours per weekly cycle | 2–3 hours |
-| Accounts Payable | Approximately 2 hours per billing cycle | Under 5 minutes |
+| Accounts Payable | Approximately 2 hours per weekly cycle | Under 5 minutes |
 | Historical Invoice Reporting | Manual workbook and worksheet searches | Invoice-number-driven reporting |
+
 
 ### Accounts Receivable
 
@@ -29,7 +31,7 @@ Essential accounting controls remain in place, including verification of support
 
 ### Accounts Payable
 
-Reduced vendor bill preparation and entry time from approximately **2 hours to under 5 minutes** through vendor-specific account mapping, automated VMS fee calculations, and batch CSV imports.
+Reduced weekly vendor bill preparation and entry time from approximately **2 hours to under 5 minutes** through vendor-specific account mapping, automated VMS fee calculations, and batch CSV imports.
 
 Previously, each vendor's historical bill was retrieved and copied individually in NetSuite to preserve the correct vendor-specific COGS account. Invoice numbers, dates, amounts, fees, and memos were then updated manually.
 
