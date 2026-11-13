@@ -1,0 +1,101 @@
+
+name: Invoice Report Demo
+
+on:
+  workflow_dispatch:
+
+jobs:
+  invoice-report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Excel library
+        run: pip install openpyxl
+
+      - name: Prepare historical invoice snapshots
+        run: python prepare_report_demo.py
+
+      - name: Import Super Bill
+        run: python ImportTool.py
+
+      - name: Generate Original Invoice Report
+        run: |
+          python InvoiceReport.py --invoice DEMO-PV10004
+          mkdir -p final-reports
+          cp report-output/InvoiceReport.csv final-reports/DEMO-PV10004.csv
+
+      - name: Generate Correction Invoice Report
+        run: |
+          python InvoiceReport.py --invoice DEMO-PV10005
+          cp report-output/InvoiceReport.csv final-reports/DEMO-PV10005.csv
+          cp report-output/InvoiceReportData.csv final-reports/InvoiceReportData.csv
+
+      - name: Verify report totals
+        run: |
+          python - <<'PY'
+          import csv
+          from decimal import Decimal
+          from pathlib import Path
+
+          expected = {
+              "DEMO-PV10004": (3, Decimal("1432.00")),
+              "DEMO-PV10005": (1, Decimal("100.00")),
+          }
+
+          for invoice, (count, total) in expected.items():
+              path = Path("final-reports") / f"{invoice}.csv"
+
+              with path.open(
+                  encoding="utf-8-sig", newline=""
+              ) as f:
+                  rows = list(csv.DictReader(f))
+
+              actual = sum(
+                  Decimal(r["Calculated Total"])
+                  for r in rows
+              )
+
+              assert len(rows) == count, "Incorrect row count"
+              assert actual == total, "Incorrect invoice total"
+
+              assert all(
+                  r["Invoice Number"] == invoice
+                  for r in rows
+              ), "Incorrect invoice mapping"
+
+              assert all(
+                  r["Source Type"] == "Invoice Snapshot"
+                  for r in rows
+              ), "Non-invoice rows included"
+
+              print(
+                  f"PASS: {invoice} | "
+                  f"{len(rows)} rows | ${actual:,.2f}"
+              )
+          PY
+
+      - name: Upload Invoice Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: Invoice-Reports
+          path: final-reports/
+
+      - name: Upload Sample Super Bill
+        uses: actions/upload-artifact@v4
+        with:
+          name: Super-Bill-with-Invoice-Snapshots
+          path: raw/WEO_2026-10-17.xlsx
+
+      - name: Upload Consolidated Data
+        uses: actions/upload-artifact@v4
+        with:
+          name: Consolidated-Report-Data
+          path: output/
