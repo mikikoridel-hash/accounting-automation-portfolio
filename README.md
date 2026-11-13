@@ -60,6 +60,25 @@ All improvements were designed to preserve existing business workflows, accounti
 
 ---
 
+## Financial Analysis & Visualization
+
+### AP Aging Dashboard — Power BI
+
+An interactive financial dashboard designed to support accounts payable analysis and management reporting in a healthcare staffing MSP/VMS environment.
+
+- Total AP balance, overdue amount, and overdue percentage
+- Aging analysis by vendor and facility
+- Interactive facility and vendor filters
+- NetSuite Saved Search data transformation using Power Query
+- Reusable DAX measures
+
+[View Power BI Dashboard Project](financial-dashboard/README.md)
+
+![AP Aging Dashboard](financial-dashboard/AP_Aging_Dashboard.png)
+
+---
+
+
 ## 1. Business Problem
 
 Healthcare staffing accounting involves multiple staffing agencies, facilities, work weeks, billing rates, client invoices, and vendor bills.
