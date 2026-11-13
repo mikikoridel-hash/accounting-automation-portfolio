@@ -1,38 +1,71 @@
 
-# Accounting Automation & Invoice Reporting
+# Accounting Automation Portfolio
 
-### A practical accounting workflow automation portfolio
+### Practical accounting workflow improvements using Python, Excel & GitHub Actions
 
-An AI-assisted Python and Excel project demonstrating how existing accounting workflows can be made more efficient, reliable, and easier to operate without replacing the underlying business process.
+A portfolio demonstrating how existing accounting workflows can be made more efficient, reliable, and easier to operate without replacing the underlying business process.
 
-This project is based on real accounting workflow improvements and has been recreated using entirely synthetic data for portfolio purposes.
+Based on real-world accounting improvements and recreated using entirely synthetic data, this project demonstrates accounts receivable automation, accounts payable automation, billing data consolidation, quality control, and historical invoice reporting.
 
-**Current scope:** Accounts Receivable (AR), billing data consolidation, invoice quality control, batch CSV generation, and historical invoice reporting.
+---
+
+## Business Impact
+
+### Real-World Workflow Improvements
+
+| Area | Before | After |
+|---|---|---|
+| Accounts Receivable | Approximately 8 hours per weekly cycle | 2–3 hours |
+| Accounts Payable | Approximately 2 hours per billing cycle | Under 5 minutes |
+| Historical Invoice Reporting | Manual workbook and worksheet searches | Invoice-number-driven reporting |
+
+### Accounts Receivable
+
+Reduced weekly invoice processing time from approximately **8 hours to 2–3 hours**, including billing reconciliation, final review, and supporting PDF attachments.
+
+Previously, invoices were created individually in the accounting system, with detailed billing information entered manually. The improved workflow consolidates billing data, prepares validated invoice records, and generates batch CSV files for import.
+
+Essential accounting controls remain in place, including verification of supporting agency invoices, attachment completeness, and final invoice review.
+
+### Accounts Payable
+
+Reduced vendor bill preparation and entry time from approximately **2 hours to under 5 minutes** through vendor-specific account mapping, automated VMS fee calculations, and batch CSV imports.
+
+Previously, each vendor's historical bill was retrieved and copied individually in NetSuite to preserve the correct vendor-specific COGS account. Invoice numbers, dates, amounts, fees, and memos were then updated manually.
+
+The improved workflow replaces those repeated searches and manual entries with standardized mapping tables and automated CSV generation.
+
+### Historical Reporting
+
+Replaced manual searches across weekly Super Bill workbooks with invoice-number-driven reporting using a centralized billing dataset.
+
+### Data Quality
+
+Introduced standardized agency selection through Excel Data Validation to prevent inconsistent data entry at the source, while retaining mapping controls for historical records and unexpected name variations.
+
+All improvements were designed to preserve existing business workflows, accounting controls, and client reporting formats.
+
+*Performance figures are approximate estimates based on the author's actual accounting workflow experience. This repository recreates the underlying automation concepts using synthetic data; the figures are not benchmark measurements of the Python demonstrations.*
 
 ---
 
 ## 1. Business Problem
 
-Weekly healthcare staffing billing involves multiple Excel workbooks, staffing agencies, facilities, work weeks, billing rates, and invoice records.
+Healthcare staffing accounting involves multiple staffing agencies, facilities, work weeks, billing rates, client invoices, and vendor bills.
 
 Traditional workflows require repetitive manual tasks:
 
-- Opening individual weekly Super Bill workbooks.
-- Searching for the correct agency or invoice worksheet.
-- Copying and combining billing details.
-- Reconciling invoice amounts against approved totals.
-- Preparing invoice import files for the accounting system.
-- Retrieving historical billing details for client reporting.
+- Opening multiple weekly Excel workbooks.
+- Searching for agency billing records and historical invoices.
+- Copying and combining detailed billing information.
+- Entering individual invoices and vendor bills into the accounting system.
+- Looking up vendor-specific accounting information.
+- Reconciling billing totals against approved amounts.
+- Preparing supporting documents and client reports.
 
-As billing volume increases, these tasks create opportunities for:
+These manual processes create opportunities for incorrect data entry, duplicate billing, missing information, inconsistent agency names, and time-consuming historical research.
 
-- Incorrect or missing billing information.
-- Duplicate invoices.
-- Incorrect facility or agency selection.
-- Inconsistent data across separate files.
-- Time-consuming historical invoice research.
-
-The objective was to reduce repetitive work while preserving existing accounting controls, source workbooks, and client deliverables.
+The objective was to reduce repetitive administrative work while preserving accounting accuracy, source records, and existing business deliverables.
 
 ---
 
@@ -40,29 +73,35 @@ The objective was to reduce repetitive work while preserving existing accounting
 
 ### Preserve the existing workflow
 
-The original business process does not need to be replaced.
+Automation should improve the work without unnecessarily disrupting the surrounding business process.
 
-- Existing Super Bill workbooks remain the source.
+- Existing Super Bill workbooks remain the source of billing details.
 - Existing invoice approval procedures remain in place.
 - Existing accounting system import processes remain in place.
 - Existing client reporting formats remain unchanged.
 - Manual review is retained where accounting judgment is required.
 
-The automation improves the work between these existing steps.
+### One data foundation, multiple business uses
 
-### One source, multiple business uses
+Billing data is consolidated once and reused for multiple accounting functions.
 
-Instead of maintaining separate manually edited datasets for each task, billing data is consolidated once and reused for multiple accounting functions.
+The original source workbook and worksheet are retained for traceability. Generated outputs do not become additional independently maintained sources of billing information.
 
-The original source workbook and worksheet are retained for traceability.
+Approved agency invoice records remain a separate, controlled input for accounts payable and invoice reconciliation.
 
-Generated outputs are not additional independently maintained sources of truth.
+Shared reference information, such as agency name mapping, can be reused across AR and AP workflows.
 
 ### Automate repetition, not accounting judgment
 
-The system automates data extraction, transformation, calculation, reconciliation, and file preparation.
+The system automates extraction, transformation, calculation, reconciliation, and file preparation.
 
-It does not replace the accountant's responsibility to review billing exceptions, validate contractual rates, or approve invoices.
+It does not replace the accountant's responsibility to validate contractual billing requirements, review exceptions, confirm supporting documents, and approve financial transactions.
+
+### Prevent errors at the source
+
+The real-world workflow also introduces Excel Data Validation for agency selection.
+
+Standardized input reduces name variations before they enter the processing workflow. Mapping tables remain useful for historical data, external inputs, and defensive validation.
 
 ---
 
@@ -70,15 +109,18 @@ It does not replace the accountant's responsibility to review billing exceptions
 
 | Business Task | Before | After |
 |---|---|---|
-| Weekly data consolidation | Open and combine multiple Excel files manually | Consolidate workbooks through an import process |
-| Data updates | Recheck and recopy revised files | Detect changed files and replace their imported records |
-| Invoice preparation | Search and copy selected billing rows | Select WEO, facility, agency, and source worksheet |
-| Invoice reconciliation | Compare totals manually | Block CSV generation when totals do not match |
-| ERP import preparation | Prepare invoice records individually | Generate a validated weekly batch CSV |
-| Historical invoice reporting | Search old workbooks and invoice worksheets | Enter an invoice number to retrieve its billing details |
-| Client report preparation | Locate, select, and copy historical data | Generate the report details and paste them into the existing client template |
-
-The result is a workflow focused on review and exception handling rather than repetitive data retrieval and re-entry.
+| Weekly data consolidation | Open and combine Excel files manually | Automated workbook consolidation |
+| Data updates | Recheck and recopy revised files | Hash-based detection and replacement |
+| AR invoice preparation | Search records and enter invoice details individually | Select billing data and generate validated import files |
+| AR reconciliation | Compare totals manually | Automated reconciliation with export prevention |
+| AR batch processing | Create invoices individually | Generate a weekly batch CSV |
+| AP vendor lookup | Find and copy a previous vendor bill | Retrieve vendor information from mapping tables |
+| AP account selection | Preserve COGS accounts through historical bill copying | Automatically select vendor-specific COGS accounts |
+| AP fee calculation | Enter VMS fee deductions manually | Automatically calculate the 5% fee |
+| AP bill entry | Create and save each vendor bill | Generate a batch vendor bill CSV |
+| Historical reporting | Search old workbooks and worksheets | Enter an invoice number to retrieve billing details |
+| Client report preparation | Locate and copy historical source data | Generate report details and paste into the existing template |
+| Agency data entry | Manually type agency names | Select standardized names using Data Validation |
 
 ---
 
@@ -87,33 +129,43 @@ The result is a workflow focused on review and exception handling rather than re
 ```mermaid
 flowchart TD
     A[Weekly Super Bill Workbooks] --> B[Import Tool]
-
     B --> C[MasterData]
     C --> D[CleanedData]
 
-    M[Facility and Agency Mapping] --> D
+    M[Shared Agency Mapping] --> D
+    FM[Facility Mapping] --> D
 
-    D --> E[Invoice Tool]
+    D --> E[AR Invoice Tool]
     D --> F[Historical Invoice Reporting]
 
     E --> G[Invoice Review and Reconciliation]
     H[Invoice History and Expected Totals] --> G
-
-    G --> I[NetSuite-Oriented CSV]
+    G --> I[AR Invoice CSV]
     I --> J[Weekly Batch CSV]
+    J --> N[Manual Accounting System Import]
 
-    K[Invoice Mapping] --> F
+    K[Historical Invoice Mapping] --> F
     F --> L[Interactive Excel Report]
-    L --> N[Existing Client Report Template]
+    L --> O[Existing Client Report Template]
 
-    J --> O[Manual ERP Import]
+    P[Approved Agency Invoices] --> Q[AP Billing Automation]
+    M --> Q
+    R[Vendor and Account Mapping] --> Q
+    Q --> S[Gross Expense and VMS Fee]
+    S --> T[AP Reconciliation]
+    T --> U[Vendor Bill CSV]
+    U --> N
 ```
 
-### Important distinction
+### Architecture Notes
 
-The diagram represents the overall business workflow.
+- AR and historical reporting reuse the consolidated billing dataset.
+- AP processes approved agency invoice records rather than rebuilding payable amounts from clinical shift data.
+- Agency mapping is shared across AR and AP.
+- Historical invoice snapshots preserve the details billed at a particular point in time.
+- Manual accounting system import and client report submission remain controlled steps.
 
-The current repository demonstrates its components through separate runnable workflows. Some sample inputs are prepared independently for testing rather than being produced automatically by every preceding component.
+The current repository demonstrates these components through separate runnable workflows. Some sample inputs are prepared independently for testing instead of being generated automatically by every preceding component.
 
 ---
 
@@ -125,43 +177,43 @@ The current repository demonstrates its components through separate runnable wor
 
 Consolidates weekly Excel workbooks into structured datasets.
 
-Features:
+#### Features
 
 - Direct XLSX import.
 - Source file and worksheet traceability.
 - File hash-based change detection.
 - Incremental import of new workbooks.
 - Replacement of imported records when a workbook changes.
-- Support for source rows that have been added, edited, or deleted.
+- Support for records added, edited, or deleted in source workbooks.
 - Facility and agency name standardization.
 - Mapping quality control.
-- Separation of normal timesheet data and historical invoice snapshots.
+- Separation of normal timesheets and historical invoice snapshots.
 
-Outputs:
+The import process preserves supplied billing hour classifications and rates rather than enforcing one overtime pattern or fixed rate multiplier.
+
+#### Outputs
 
 - `MasterData.csv`
 - `CleanedData.csv`
 - `ImportLog.csv`
 - `MappingQC.csv`
 
-The import process preserves supplied billing hour classifications and rates rather than enforcing a single overtime pattern or fixed rate multiplier.
-
 ---
 
-### B. Invoice Tool
+### B. AR Invoice Tool
 
 **Files:** `InvoiceTool.py`, `test_invoice.py`
 
 Extracts billing details for invoice preparation using the consolidated dataset.
 
-Selection criteria:
+#### Selection criteria
 
 - Work Week Ending (WEO).
 - Facility.
 - One or more staffing agencies.
 - Optional source worksheet selection.
 
-Features:
+#### Features
 
 - Multiple-agency invoice extraction.
 - Billing total calculation.
@@ -169,46 +221,44 @@ Features:
 - Mapping validation.
 - Exclusion of historical invoice snapshots from new invoice extraction.
 
-Outputs:
+#### Outputs
 
 - `InvoiceRows.csv`
 - `BillCheck.csv`
 
-This stage reduces the need to search and copy billing records across multiple workbooks.
+This stage reduces the need to search for and copy billing records across multiple workbooks.
 
 ---
 
-### C. Invoice Reconciliation and ERP-Oriented Export
+### C. AR Reconciliation and ERP-Oriented Export
 
 **File:** `NSMaster.py`
 
 Combines invoice header information and billing summaries to prepare an accounting system import file.
 
-Features:
+#### Features
 
 - Invoice number lookup.
 - Customer, payment terms, invoice date, and service period retrieval.
 - Unit-level billing summaries.
 - REG, OT, DT, and additional billing line generation.
 - Expected total versus calculated total reconciliation.
-- Export prevention when totals do not match.
+- Export prevention when amounts do not match.
 
-Outputs:
-
-- `InvoiceHeader.csv`
-- `Reconciliation.csv`
-- `NetSuite_Import.csv`
-
-Example:
+#### Example
 
 | Expected Total | Calculated Total | Result |
 |---:|---:|---|
 | $2,074.00 | $2,074.00 | Export allowed |
 | $2,074.00 | $2,162.00 | Export blocked |
 
-The invoice number is supplied through the invoice history rather than being independently generated by the export program.
+Invoice numbers are supplied through invoice history rather than independently generated by the export program.
 
-The CSV is a synthetic demonstration of an ERP-oriented import workflow, not a certified NetSuite import configuration.
+#### Outputs
+
+- `InvoiceHeader.csv`
+- `Reconciliation.csv`
+- `NetSuite_Import.csv`
 
 ---
 
@@ -218,20 +268,20 @@ The CSV is a synthetic demonstration of an ERP-oriented import workflow, not a c
 
 Combines multiple validated invoices into a billing-date-specific CSV.
 
-Features:
+#### Features
 
-- Multiple invoices in one weekly batch.
+- Multiple invoices in one batch.
 - Reconciliation before adding an invoice.
-- Duplicate invoice number detection.
+- Duplicate invoice number detection within the batch.
 - Explicit replacement of an existing invoice before import.
-- Preservation of the previous batch when validation fails.
+- Preservation of the existing batch when validation fails.
 - Billing-date-specific output files.
 
-Example output:
+#### Example output
 
 `WeeklyBatch_2026-11-09.csv`
 
-The demonstration tests batch creation, rejected invoices, duplicate prevention, and controlled invoice replacement.
+The demonstration verifies successful batch creation, rejected invoice additions, duplicate prevention, and controlled invoice replacement.
 
 ---
 
@@ -239,9 +289,9 @@ The demonstration tests batch creation, rejected invoices, duplicate prevention,
 
 **Files:** `SegmentInvoice.py`, `run_segment_billing.py`
 
-Demonstrates billing scenarios where a single clinical shift contains multiple billing categories.
+Demonstrates billing scenarios where one clinical shift contains multiple billing categories.
 
-Supported examples:
+#### Supported examples
 
 - Charge assignments.
 - Charge and Preceptor assignments.
@@ -250,11 +300,11 @@ Supported examples:
 - Original invoices.
 - Subsequent correction invoices.
 
-A single shift may legitimately appear in multiple billing rows or multiple invoice records.
+A single shift may legitimately appear in multiple billing rows or invoice records.
 
 The system therefore does not assume that a repeated Shift ID is automatically a duplicate billing error.
 
-#### Example: Original and Correction
+#### Example
 
 | Billing Category | REG | OT | DT | Amount |
 |---|---:|---:|---:|---:|
@@ -274,7 +324,7 @@ Correction billing hours represent the adjustment being invoiced and should not 
 
 **Files:** `InvoiceReport.py`, `prepare_report_demo.py`, `build_report_excel.py`
 
-Retrieves historical invoice details from the same consolidated billing dataset used for invoice preparation.
+Retrieves historical invoice details using the same consolidated billing dataset used for AR invoice preparation.
 
 #### Historical invoice snapshots
 
@@ -282,7 +332,7 @@ Weekly Super Bill workbooks may contain:
 
 - Normal agency billing worksheets.
 - Correction worksheets.
-- Historical invoice worksheets containing the details billed at a specific point in time.
+- Historical invoice worksheets containing details billed at a specific point in time.
 
 Historical invoice worksheets are retained in the source workbook and imported into the consolidated dataset.
 
@@ -290,7 +340,7 @@ Their recorded billing amounts are preserved for reporting rather than recalcula
 
 #### Invoice mapping
 
-`billing/InvoiceMap.csv` associates historical invoice worksheets with invoice numbers.
+`billing/InvoiceMap.csv` associates historical worksheets with invoice numbers.
 
 | Field | Purpose |
 |---|---|
@@ -301,43 +351,32 @@ Their recorded billing amounts are preserved for reporting rather than recalcula
 | Facility | Standard facility name |
 | Submission Date | Invoice billing date |
 
-The report generator matches the source file and worksheet name to retrieve the correct historical invoice details.
-
-The facility is also validated against the standardized source data.
+The report generator matches the source file and worksheet name and validates the standardized facility.
 
 #### Interactive Excel Report
 
 The generated `InvoiceReport.xlsx` contains three worksheets:
 
-- **Report:** User-facing report with a yellow invoice number input cell.
+- **Report:** Interactive report with a yellow invoice number input cell.
 - **Data:** Prepared invoice detail records.
 - **Invoice:** Historical invoice mapping.
 
-Enter or select an invoice number in cell B1 to display:
+Enter or select an invoice number in cell B1 to display the work week date range, facility, invoice details, agency, clinician identifier, unit, shift date, billing hours, and invoice total.
 
-- Work week date range.
-- Facility.
-- Invoice number.
-- Agency and clinician details.
-- Department or unit.
-- Service date.
-- REG, OT, and DT hours.
-- Billing amounts and invoice total.
+#### Example
 
-Example:
-
-| Invoice Number | Type | Work Week Ending | Rows | Total |
+| Invoice Number | Type | WEO | Rows | Total |
 |---|---|---|---:|---:|
 | DEMO-PV10004 | Original | 10/17/2026 | 3 | $1,432.00 |
 | DEMO-PV10005 | Correction | 10/17/2026 | 1 | $100.00 |
 
 Both invoices belong to the same original work week but represent different billing events.
 
-The Excel report retrieves the correct historical records based on invoice number.
+The interactive report retrieves the correct historical records based on the invoice number.
 
 Client report preparation remains a controlled manual step: the accountant copies the generated report into the existing client-required workbook and arranges invoice sections by WEO.
 
-#### Reporting outputs
+#### Outputs
 
 - Full historical invoice detail data.
 - Individual invoice detail CSVs.
@@ -346,25 +385,137 @@ Client report preparation remains a controlled manual step: the accountant copie
 
 ---
 
-## 6. Quality Control and Data Integrity
+### G. AP Vendor Bill Automation
 
-The project demonstrates practical accounting controls throughout the workflow.
+**Files:** `APBilling.py`, `test_ap_billing.py`
+
+Generates vendor bill import records from approved agency invoices.
+
+#### Business context
+
+Different staffing agencies require different COGS accounts.
+
+The original manual process retrieved and copied a previous NetSuite vendor bill for each agency to preserve the correct accounting configuration.
+
+The improved process stores the vendor-specific accounting information in mapping tables, eliminating the need to repeatedly search historical bills.
+
+#### Inputs
+
+| File | Purpose |
+|---|---|
+| `ap/ApprovedAgencyInvoices.csv` | Approved agency invoice records |
+| `mapping/AgencyMap.csv` | Shared agency name standardization |
+| `ap/VendorMap.csv` | Vendor ID and accounting configuration |
+
+The approved invoice list includes:
+
+- Agency and facility.
+- Vendor invoice number.
+- Client invoice number.
+- Internal reference numbers.
+- Work week ending.
+- Approved invoice amount.
+- Approval date.
+
+#### Vendor and account mapping
+
+The vendor mapping provides:
+
+- Vendor ID.
+- Vendor-specific COGS Account ID.
+- Payment Terms ID.
+- AP Account ID.
+- VMS Fee Account ID.
+
+For example:
+
+| Agency | Vendor ID | COGS Account | VMS Fee Account |
+|---|---:|---:|---:|
+| Cedar Staffing | 9001 | 5101 | 5201 |
+| Harbor Clinical | 9002 | 5102 | 5201 |
+
+All identifiers are fictional.
+
+#### VMS fee processing
+
+The demonstrated business rule applies a uniform **5% VMS fee** across agencies and facilities.
+
+Each vendor bill is represented by two expense lines:
+
+1. Gross agency invoice amount assigned to the vendor-specific COGS account.
+2. Negative VMS fee assigned to the designated fee account.
+
+The lines share the same External ID so that they represent one vendor bill.
+
+#### Example
+
+| Expense Line | Account | Amount |
+|---|---|---:|
+| Gross Agency Invoice | COGS 5101 | $2,074.00 |
+| VMS Fee | Fee Account 5201 | -$103.70 |
+| Net Payable | | $1,970.30 |
+
+The gross expense and fee deduction are recorded separately rather than combining them into a single net expense amount.
+
+#### Additional features
+
+- Reuse of existing agency name mapping.
+- Automatic vendor and account selection.
+- Decimal-based fee calculations with cent rounding.
+- External ID generation.
+- Memo generation using invoice references and facility information.
+- Duplicate vendor invoice detection within the current input batch.
+- Missing agency and vendor mapping validation.
+- Gross, fee, net payable, and CSV total reconciliation.
+- Export prevention when input validation fails.
+
+#### Demonstration results
+
+| Metric | Result |
+|---|---:|
+| Vendor Bills | 4 |
+| CSV Expense Lines | 8 |
+| Gross Total | $5,456.00 |
+| VMS Fee Total | -$272.80 |
+| Net Payable | $5,183.20 |
+| CSV Total | $5,183.20 |
+| Reconciliation Difference | $0.00 |
+
+#### Outputs
+
+- `VendorBillSummary.csv`
+- `APReconciliation.csv`
+- `VendorBill_Import.csv`
+
+The AP export is a synthetic ERP-oriented demonstration, not a certified production NetSuite import configuration.
+
+---
+
+## 6. Quality Control and Data Integrity
 
 | Control | Purpose |
 |---|---|
-| File hash comparison | Prevent repeated processing of unchanged files |
-| Changed-file replacement | Avoid retaining obsolete source records |
+| File hash comparison | Avoid repeated processing of unchanged files |
+| Changed-file replacement | Avoid retaining obsolete imported records |
 | Facility and agency mapping | Standardize inconsistent source names |
 | Source traceability | Identify the original workbook and worksheet |
-| Source type separation | Prevent historical invoice records from entering new invoice extraction |
+| Source type separation | Exclude historical snapshots from new AR invoice extraction |
 | Numeric validation | Reject invalid billing values |
-| Invoice amount reconciliation | Block mismatched invoice exports |
-| Batch duplicate detection | Prevent accidental repeated invoice additions |
+| AR amount reconciliation | Block mismatched invoice exports |
+| AR batch duplicate detection | Prevent repeated invoice additions |
 | Explicit batch replacement | Correct an invoice without retaining duplicate batch records |
-| Invoice mapping validation | Reject ambiguous historical worksheet mappings |
-| Facility validation | Prevent historical invoice details from being assigned to the wrong facility |
+| Historical invoice mapping validation | Reject ambiguous worksheet mappings |
+| Facility validation | Prevent incorrect historical invoice assignment |
+| Vendor account mapping | Select the appropriate COGS account |
+| AP vendor invoice duplicate detection | Detect repeated vendor invoices within an input batch |
+| VMS fee calculation | Apply consistent fee calculations and rounding |
+| AP batch reconciliation | Verify gross, fee, net payable, and CSV totals |
 
-These controls are designed to reduce repetitive errors while retaining human review for contractual and accounting decisions.
+### Human review remains essential
+
+The real-world AR workflow retains manual review of supporting agency invoice PDFs, invoice amount verification, attachment completeness, exception handling, and final approval.
+
+Automation is intended to reduce repetitive entry and retrieval work, not eliminate the accountant's responsibility for financial accuracy.
 
 ---
 
@@ -372,36 +523,28 @@ These controls are designed to reduce repetitive errors while retaining human re
 
 The repository includes GitHub Actions workflows that generate downloadable demonstration artifacts.
 
-### Quick start
+### Quick Start
 
 1. Open the repository's **Actions** tab.
-2. Select one of the workflows below.
+2. Select a workflow below.
 3. Select **Run workflow**.
 4. Review the execution results.
 5. Download the generated artifacts.
 
 | Workflow | Demonstrates |
 |---|---|
-| Import Super Bill Demo | Excel consolidation, incremental updates, mapping |
-| Invoice Tool Demo | Facility and agency invoice extraction |
-| NS Master Demo | Invoice reconciliation and CSV generation |
-| Weekly Batch Demo | Multi-invoice batch processing and duplicate controls |
+| Import Super Bill Demo | Excel consolidation, incremental updates, and mapping |
+| Invoice Tool Demo | AR billing detail extraction |
+| NS Master Demo | AR reconciliation and invoice CSV generation |
+| Weekly Batch Demo | Multi-invoice processing and duplicate controls |
 | Segment Invoice Demo | Split-shift billing summaries |
-| Segment Billing Demo | Original and correction invoice CSV generation |
-| Invoice Report Demo | Historical invoice mapping and interactive Excel reporting |
+| Segment Billing Demo | Original and correction invoice generation |
+| Invoice Report Demo | Historical mapping and interactive Excel reporting |
+| AP Billing Demo | Vendor account mapping, VMS fees, reconciliation, and vendor bill CSV generation |
 
-### Recommended starting point
+### Recommended Demo 1: Interactive Invoice Report
 
-Run **Invoice Report Demo** to explore the historical reporting workflow.
-
-This demonstration:
-
-1. Prepares synthetic historical invoice worksheets.
-2. Imports the workbook into the consolidated dataset.
-3. Associates historical invoice details with invoice numbers.
-4. Generates original and correction reports.
-5. Verifies row counts and invoice totals.
-6. Produces an interactive Excel workbook.
+Run **Invoice Report Demo**.
 
 Download the **Invoice-Reports** artifact and open `InvoiceReport.xlsx`.
 
@@ -410,22 +553,46 @@ Change cell B1 between:
 - `DEMO-PV10004`
 - `DEMO-PV10005`
 
-The report will display the corresponding historical invoice details.
+The Excel report displays the appropriate historical invoice details, work week, and total.
 
-For reconciliation and export controls, run **NS Master Demo** and **Weekly Batch Demo**.
+Expected results:
+
+- Original: 3 rows, $1,432.00.
+- Correction: 1 row, $100.00.
+
+### Recommended Demo 2: AP Billing Automation
+
+Run **AP Billing Demo**.
+
+Download the **AP-Billing-Results** artifact.
+
+Open `VendorBill_Import.csv` and observe:
+
+- Four vendor bills represented by eight expense lines.
+- Different COGS accounts for Cedar and Harbor.
+- A separate negative 5% VMS fee line for each bill.
+- Matching External IDs for the two lines of each bill.
+
+Open `APReconciliation.csv` to verify the net payable and CSV total of $5,183.20 with a $0.00 difference.
+
+### Additional Control Demonstrations
+
+Run **NS Master Demo** and **Weekly Batch Demo** to explore AR reconciliation and duplicate invoice controls.
+
+Run **Import Super Bill Demo** to explore incremental imports and changed-file replacement.
 
 ---
 
 ## 8. Repository Structure
 
 ```text
-invoice-automation-demo/
+accounting-automation-portfolio/
 |
 |-- raw/
 |   Synthetic weekly Super Bill workbooks
 |
 |-- mapping/
-|   Facility and agency mapping tables
+|   Shared agency and facility mapping tables
 |
 |-- billing/
 |   InvoiceHistory.csv
@@ -433,12 +600,17 @@ invoice-automation-demo/
 |   InvoiceMap.csv
 |   ShiftSegments.csv
 |
+|-- ap/
+|   ApprovedAgencyInvoices.csv
+|   VendorMap.csv
+|
 |-- ImportTool.py
 |-- InvoiceTool.py
 |-- NSMaster.py
 |-- WeeklyBatch.py
 |-- SegmentInvoice.py
 |-- InvoiceReport.py
+|-- APBilling.py
 |
 |-- run_weekly_batch.py
 |-- run_segment_billing.py
@@ -448,6 +620,7 @@ invoice-automation-demo/
 |-- test_import.py
 |-- test_invoice.py
 |-- test_weekly_batch.py
+|-- test_ap_billing.py
 |
 |-- .github/workflows/
 |   GitHub Actions demonstration workflows
@@ -455,21 +628,25 @@ invoice-automation-demo/
 |-- README.md
 ```
 
+Generated outputs include consolidated datasets, billing summaries, reconciliation results, accounting-system-oriented CSV files, and interactive Excel reports.
+
 ---
 
 ## 9. Development Approach
 
 This project combines accounting expertise with AI-assisted software development.
 
-### Accounting responsibilities
+### Accounting and workflow design
 
-- Identify repetitive tasks and operational bottlenecks.
-- Define accounting requirements.
-- Design the data flow and business controls.
-- Determine which manual review steps must remain.
-- Validate billing scenarios and expected results.
-- Test outputs against practical accounting requirements.
-- Maintain compatibility with existing business processes.
+The project author is responsible for:
+
+- Identifying repetitive accounting tasks and operational bottlenecks.
+- Defining business requirements.
+- Designing data flows and accounting controls.
+- Maintaining compatibility with existing business processes.
+- Determining which manual review steps must remain.
+- Defining expected financial results and exception scenarios.
+- Validating the generated outputs against practical accounting requirements.
 
 ### AI-assisted implementation
 
@@ -484,7 +661,7 @@ AI tools assist with:
 
 The accounting requirements, workflow design, and validation decisions are driven by the project author.
 
-This portfolio demonstrates the ability to translate practical accounting knowledge into maintainable, testable automation.
+The original workflow improvements were developed and used in actual accounting operations. This repository is a separate, synthetic reconstruction for professional portfolio purposes.
 
 ---
 
@@ -494,12 +671,12 @@ This portfolio demonstrates the ability to translate practical accounting knowle
 - Excel / XLSX
 - CSV
 - openpyxl
-- Decimal-based billing calculations
+- Decimal-based financial calculations
 - File hashing
 - GitHub Actions
 - Automated regression tests
 
-Most core processing uses the Python standard library. The openpyxl library is used for generating and preparing demonstration Excel workbooks.
+Most core processing uses the Python standard library. The openpyxl library is used for preparing demonstration workbooks and generating interactive Excel reports.
 
 ---
 
@@ -507,42 +684,48 @@ Most core processing uses the Python standard library. The openpyxl library is u
 
 This repository is a portfolio demonstration, not a production accounting system.
 
-- All sample workbooks, names, identifiers, rates, and billing amounts are fictional.
+- All sample workbooks, organizations, identifiers, rates, and amounts are fictional.
 - GitHub Actions runs use isolated execution environments.
-- Historical snapshot worksheets are prepared for the reporting demonstration without modifying the committed source workbook.
+- Historical snapshots are prepared during demonstration runs without modifying the committed source workbook.
 - Weekly batch persistence across separate workflow runs is not currently implemented.
-- Split-shift examples are demonstrated using a separate sample dataset.
-- Full production NetSuite field mappings and actual ERP import execution are outside the current scope.
+- Split-shift examples use a separate sample dataset.
+- AR and AP amounts are independently supplied; matching sample amounts do not imply that customer billing and vendor payable amounts must be equal.
+- AP duplicate checks apply to the current input batch and do not query historical transactions in NetSuite.
+- Full production NetSuite field mappings, including production-specific accounting and custom fields, are outside the current demonstration scope.
+- Actual ERP import execution is not performed by the demonstrations.
 - Client workbook insertion and final submission remain manual.
-- Additional real-world billing categories, such as holiday, missed meal, missed break, on-call, and callback, are not fully implemented.
+- Additional billing categories, such as holiday, missed meal, missed break, on-call, and callback, are not fully implemented.
+- Excel Data Validation is a real-world source-data improvement described in this portfolio; the AP CSV demonstration focuses on processing and mapping the approved records.
 
-The objective is to demonstrate the workflow architecture and accounting controls, not to reproduce every production billing rule.
+The objective is to demonstrate workflow architecture, practical automation, and accounting controls rather than reproduce every production billing rule.
 
 ---
 
 ## 12. Roadmap
 
-### Current milestone: AR Automation and Invoice Reporting
+### Completed Demonstrations
 
 - [x] Weekly Excel data consolidation
 - [x] Incremental import and changed-file replacement
 - [x] Facility and agency mapping
-- [x] Invoice detail extraction
-- [x] Invoice reconciliation
-- [x] ERP-oriented CSV generation
+- [x] AR invoice detail extraction
+- [x] AR invoice reconciliation
+- [x] AR ERP-oriented CSV generation
 - [x] Weekly invoice batching
-- [x] Duplicate invoice controls
-- [x] Split-shift billing demonstration
+- [x] AR duplicate invoice controls
+- [x] Split-shift billing
 - [x] Original and correction invoice separation
 - [x] Historical invoice mapping
 - [x] Interactive Excel invoice reporting
+- [x] AP vendor bill automation
+- [x] Vendor-specific COGS account mapping
+- [x] Automated VMS fee processing
+- [x] AP vendor invoice duplicate controls
+- [x] AP reconciliation and CSV generation
 
-### Next milestones
+### Next Milestones
 
-- [ ] Accounts Payable billing automation
-- [ ] Vendor bill CSV generation
-- [ ] VMS fee processing
-- [ ] Credit card transaction CSV processing
+- [ ] Credit card transaction automation
 - [ ] Unified end-to-end demonstration
 - [ ] Additional documentation and regression tests
 
@@ -562,6 +745,6 @@ The repository is intended for educational and professional portfolio purposes.
 
 Accounting automation does not always require replacing an existing system.
 
-By consolidating source data, preserving historical billing records, automating repetitive preparation tasks, and retaining accounting review controls, a workflow can become significantly easier to operate without disrupting the surrounding business process.
+By consolidating source data, preserving historical billing records, standardizing reference information, automating repetitive entry, and retaining accounting review controls, existing workflows can become significantly easier to operate without disrupting the surrounding business process.
 
 **One data foundation. Multiple accounting workflows. Fewer manual steps. Stronger controls.**
