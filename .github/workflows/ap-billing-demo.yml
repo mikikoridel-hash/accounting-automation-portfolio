@@ -1,0 +1,33 @@
+
+name: AP Billing Demo
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ap-billing:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Test AP billing controls
+        run: python test_ap_billing.py
+
+      - name: Generate vendor bill CSV
+        run: python APBilling.py
+
+      - name: Upload AP billing results
+        uses: actions/upload-artifact@v4
+        with:
+          name: AP-Billing-Results
+          path: ap-output/
